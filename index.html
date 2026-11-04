@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GlamGuide</title>
+<style>
+:root{
+  --pink:#e8b7c8; --light:#f8e5ec; --cream:#fff8f3; --wine:#8e4a60;
+  --gold:#c9a66b; --dark:#333; --white:#fff; --muted:#777;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;color:var(--dark);background:var(--cream)}
+header{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.96);border-bottom:1px solid #eadde2}
+.nav{max-width:1180px;margin:auto;padding:15px 20px;display:flex;align-items:center;gap:18px}
+.logo{font-family:Georgia,serif;font-size:28px;color:var(--wine);font-weight:bold;margin-right:auto;cursor:pointer}
+nav button,.btn{border:0;background:none;cursor:pointer;font-weight:600;color:var(--dark)}
+nav{display:flex;gap:12px;flex-wrap:wrap}
+nav button:hover{color:var(--wine)}
+.search{display:flex;gap:8px;margin-left:10px}
+.search input{width:190px;padding:10px 12px;border:1px solid #ddd;border-radius:20px}
+.search button,.primary{background:var(--wine);color:white;padding:10px 16px;border-radius:20px}
+main{max-width:1180px;margin:auto;padding:30px 20px 70px}
+.hero{background:linear-gradient(135deg,var(--light),#fff);border-radius:28px;padding:55px 35px;text-align:center}
+.hero h1{font:48px Georgia,serif;color:var(--wine);margin:0 0 12px}
+.hero p{font-size:18px;max-width:650px;margin:0 auto 25px;color:#666}
+.hero .search{justify-content:center;margin:0}
+.hero .search input{width:min(500px,75vw);padding:14px 18px}
+h2{font:32px Georgia,serif;color:var(--wine);margin-top:45px}
+h3{margin-bottom:7px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:18px}
+.card{background:white;border:1px solid #eee0e6;border-radius:20px;padding:20px;box-shadow:0 5px 18px rgba(80,40,55,.06)}
+.card .emoji{font-size:40px}
+.card p{color:#666;line-height:1.5}
+.card button{margin-top:8px}
+.badge{display:inline-block;background:var(--light);color:var(--wine);padding:5px 9px;border-radius:15px;font-size:12px}
+.fav{float:right;border:0;background:none;font-size:22px;cursor:pointer}
+.section{display:none}.section.active{display:block}
+.notice{padding:14px;background:#fff;border-left:4px solid var(--gold);border-radius:8px;margin:18px 0}
+select,.input{padding:11px;border:1px solid #ddd;border-radius:12px;background:white}
+.quiz-question{margin:15px 0}.quiz-question label{display:block;padding:9px;background:#faf5f7;border-radius:10px;margin:5px 0;cursor:pointer}
+.steps{counter-reset:step}.step{padding:15px 15px 15px 52px;position:relative;border-bottom:1px solid #eee}.step:before{counter-increment:step;content:counter(step);position:absolute;left:10px;top:13px;width:30px;height:30px;border-radius:50%;background:var(--pink);display:grid;place-items:center;font-weight:bold}
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+footer{text-align:center;padding:30px;color:#777;border-top:1px solid #eadde2}
+@media(max-width:800px){nav{display:none}.nav{flex-wrap:wrap}.search{display:none}.hero h1{font-size:38px}.compare{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+ <div class="nav">
+  <div class="logo" onclick="show('inicio')">GlamGuide</div>
+  <nav>
+   <button onclick="show('inicio')">Inicio</button><button onclick="show('productos')">Productos</button>
+   <button onclick="show('skincare')">Skincare</button><button onclick="show('brochas')">Brochas</button>
+   <button onclick="show('marcas')">Marcas</button><button onclick="show('tutoriales')">Tutoriales</button>
+   <button onclick="show('quiz')">Quiz</button><button onclick="show('looks')">Looks</button>
+   <button onclick="show('comparador')">Comparar</button>
+  </nav>
+ </div>
+</header>
+
+<main>
+<section id="inicio" class="section active">
+ <div class="hero">
+  <h1>GlamGuide</h1><p>Tu guía sencilla para descubrir maquillaje, skincare, brochas y aprender a crear tus propios looks.</p>
+  <div class="search"><input id="homeSearch" placeholder="Busca base, rubor, skincare, marca..."><button class="primary" onclick="searchSite()">Buscar</button></div>
+ </div>
+ <h2>Explora GlamGuide</h2>
+ <div class="grid">
+  <div class="card"><div class="emoji">💄</div><h3>Productos</h3><p>Descubre para qué sirve cada producto de maquillaje.</p><button class="primary" onclick="show('productos')">Explorar</button></div>
+  <div class="card"><div class="emoji">🧴</div><h3>Skincare</h3><p>Conoce limpiadores, hidratantes, protector solar y más.</p><button class="primary" onclick="show('skincare')">Explorar</button></div>
+  <div class="card"><div class="emoji">🖌️</div><h3>Brochas</h3><p>Aprende qué brocha utilizar para cada producto.</p><button class="primary" onclick="show('brochas')">Ver brochas</button></div>
+  <div class="card"><div class="emoji">✨</div><h3>Quiz</h3><p>Responde unas preguntas y recibe ideas para tu rutina.</p><button class="primary" onclick="show('quiz')">Hacer quiz</button></div>
+ </div>
+ <h2>Contenido destacado</h2><div id="homeCards" class="grid"></div>
+</section>
+
+<section id="productos" class="section">
+ <h2>Productos de maquillaje</h2><p>Aprende qué hace cada producto antes de usarlo.</p>
+ <div class="grid" id="productGrid"></div>
+</section>
+
+<section id="skincare" class="section">
+ <h2>Skincare</h2><p>Una guía sencilla para conocer productos de cuidado de la piel.</p>
+ <div class="grid" id="skinGrid"></div>
+</section>
+
+<section id="brochas" class="section">
+ <h2>Guía de brochas</h2><p>Encuentra la herramienta adecuada para cada producto o técnica.</p>
+ <div class="grid" id="brushGrid"></div>
+</section>
+
+<section id="marcas" class="section">
+ <h2>Marcas</h2><p>Explora productos organizados por marca y consulta sus reseñas.</p>
+ <div class="grid" id="brandGrid"></div>
+</section>
+
+<section id="tutoriales" class="section">
+ <h2>Tutoriales</h2><p>Aprende con videos externos y guías para principiantes.</p>
+ <div class="grid" id="tutorialGrid"></div>
+</section>
+
+<section id="quiz" class="section">
+ <h2>Quiz GlamGuide ✨</h2>
+ <div class="card">
+  <div class="quiz-question"><b>1. ¿Cuál es tu nivel?</b><label><input type="radio" name="q1" value="principiante"> Principiante</label><label><input type="radio" name="q1" value="intermedio"> Ya tengo experiencia</label></div>
+  <div class="quiz-question"><b>2. ¿Qué quieres aprender?</b><label><input type="radio" name="q2" value="natural"> Maquillaje natural</label><label><input type="radio" name="q2" value="noche"> Maquillaje de noche</label></div>
+  <div class="quiz-question"><b>3. ¿Qué te interesa cuidar?</b><label><input type="radio" name="q3" value="rutina"> Una rutina sencilla</label><label><input type="radio" name="q3" value="productos"> Conocer productos</label></div>
+  <button class="primary" onclick="runQuiz()">Ver recomendaciones</button>
+  <div id="quizResult"></div>
+ </div>
+</section>
+
+<section id="looks" class="section">
+ <h2>Looks y rutinas paso a paso</h2>
+ <div class="grid">
+  <div class="card"><span class="badge">Principiante</span><h3>✨ Look natural</h3><div class="steps"><div class="step">Prepara la piel con limpieza, hidratante y protector solar.</div><div class="step">Aplica una base ligera o corrector donde lo necesites.</div><div class="step">Añade rubor y un toque de iluminador.</div><div class="step">Define suavemente las cejas y aplica máscara.</div><div class="step">Termina con un bálsamo o labial natural.</div></div></div>
+  <div class="card"><span class="badge">Noche</span><h3>🌙 Look de noche</h3><div class="steps"><div class="step">Prepara la piel.</div><div class="step">Aplica base y corrector.</div><div class="step">Añade sombra y difumina.</div><div class="step">Define ojos con máscara.</div><div class="step">Completa con rubor e iluminador.</div></div></div>
+  <div class="card"><span class="badge">Skincare</span><h3>🧴 Rutina básica</h3><div class="steps"><div class="step">Limpia suavemente el rostro.</div><div class="step">Aplica los productos de tratamiento que correspondan.</div><div class="step">Hidrata la piel.</div><div class="step">Durante el día, finaliza con protector solar.</div></div></div>
+ </div>
+</section>
+
+<section id="comparador" class="section">
+ <h2>Comparador de productos</h2><p>Selecciona dos productos para ver sus características lado a lado.</p>
+ <div class="compare">
+  <select id="compareA" class="input"></select><select id="compareB" class="input"></select>
+ </div>
+ <div id="compareResult" class="grid" style="margin-top:20px"></div>
+</section>
+
+<section id="resultados" class="section">
+ <h2>Resultados de búsqueda</h2><div id="results" class="grid"></div>
+</section>
+</main>
+<footer>GlamGuide · Descubre · Aprende · Crea tu look</footer>
+
+<script>
+const products=[
+{name:"Base",type:"Rostro",emoji:"🧴",desc:"Ayuda a unificar visualmente el tono y crear una base para el maquillaje.",brand:"L'Oréal",rating:"★★★★☆",coverage:"Media",finish:"Natural"},
+{name:"Corrector",type:"Rostro",emoji:"✨",desc:"Se utiliza para cubrir visualmente pequeñas imperfecciones y dar luminosidad.",brand:"Maybelline",rating:"★★★★★",coverage:"Media-alta",finish:"Natural"},
+{name:"Rubor",type:"Rostro",emoji:"🌸",desc:"Añade color a las mejillas para dar un aspecto más fresco al look.",brand:"Rare Beauty",rating:"★★★★★",coverage:"Ligera",finish:"Luminoso"},
+{name:"Máscara de pestañas",type:"Ojos",emoji:"👁️",desc:"Ayuda a definir y dar volumen o longitud visual a las pestañas.",brand:"Maybelline",rating:"★★★★☆",coverage:"N/A",finish:"Definido"},
+{name:"Labial",type:"Labios",emoji:"💋",desc:"Aporta color y permite cambiar el estilo del maquillaje.",brand:"MAC",rating:"★★★★☆",coverage:"Alta",finish:"Variable"},
+{name:"Iluminador",type:"Rostro",emoji:"✨",desc:"Aporta luminosidad en zonas seleccionadas del rostro.",brand:"Rare Beauty",rating:"★★★★☆",coverage:"Ligera",finish:"Luminoso"}
+];
+const skincare=[
+{name:"Limpiador facial",emoji:"🫧",desc:"Ayuda a retirar suciedad, sudor y residuos de la superficie de la piel."},
+{name:"Hidratante",emoji:"💧",desc:"Ayuda a mantener la piel hidratada y cómoda."},
+{name:"Protector solar",emoji:"☀️",desc:"Ayuda a proteger la piel frente a la radiación UV. Úsalo según las indicaciones del producto."},
+{name:"Bálsamo labial",emoji:"💗",desc:"Ayuda a mantener los labios suaves y protegidos."},
+{name:"Agua micelar",emoji:"💦",desc:"Puede ayudar a retirar maquillaje y residuos de la piel."},
+{name:"Sérum",emoji:"🧪",desc:"Producto concentrado que se formula para necesidades específicas de la piel."}
+];
+const brushes=[
+{name:"Brocha de base",emoji:"🖌️",desc:"Sirve para distribuir base líquida o cremosa de manera uniforme."},
+{name:"Brocha de corrector",emoji:"🎨",desc:"Facilita la aplicación precisa del corrector en zonas pequeñas."},
+{name:"Brocha de rubor",emoji:"🌸",desc:"Su forma permite aplicar y difuminar rubor en las mejillas."},
+{name:"Brocha de polvo",emoji:"☁️",desc:"Se utiliza para distribuir productos en polvo de manera ligera."},
+{name:"Brocha para sombras",emoji:"👁️",desc:"Ayuda a aplicar y difuminar sombras de ojos."},
+{name:"Brocha angular",emoji:"📐",desc:"Puede utilizarse para definir cejas o crear líneas precisas con productos adecuados."}
+];
+const brands=[
+{name:"Maybelline",desc:"Productos de maquillaje para rostro, ojos y labios.",products:"Corrector, máscara"},
+{name:"L'Oréal",desc:"Amplia variedad de productos de belleza y maquillaje.",products:"Base"},
+{name:"Rare Beauty",desc:"Maquillaje con énfasis en productos de rostro y color.",products:"Rubor, iluminador"},
+{name:"MAC",desc:"Marca conocida por su variedad de productos y tonos.",products:"Labiales"}
+];
+const tutorials=[
+{name:"Maquillaje natural para principiantes",emoji:"🌷",desc:"Guía sencilla para aprender los pasos básicos.",url:"https://www.youtube.com/results?search_query=maquillaje+natural+principiantes"},
+{name:"Cómo aplicar corrector",emoji:"✨",desc:"Aprende técnicas básicas de aplicación.",url:"https://www.youtube.com/results?search_query=como+aplicar+corrector"},
+{name:"Rutina básica de skincare",emoji:"🧴",desc:"Conoce el orden general de una rutina sencilla.",url:"https://www.youtube.com/results?search_query=rutina+skincare+principiantes"},
+{name:"Cómo usar brochas",emoji:"🖌️",desc:"Identifica las brochas más comunes y sus usos.",url:"https://www.youtube.com/results?search_query=brochas+maquillaje+para+que+sirven"}
+];
+
+function show(id){
+ document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+ document.getElementById(id).classList.add('active'); window.scrollTo({top:0,behavior:'smooth'});
+}
+function cardHTML(x,kind){
+ let extra=kind==='product'?<span class="badge">${x.type}</span><p>Marca: ${x.brand}<br>Calificación: ${x.rating}</p><button class="primary" onclick="alert('${x.name}: ${x.desc}')">Ver información</button>:
+ kind==='tutorial'?<p>${x.desc}</p><a class="btn primary" href="${x.url}" target="_blank" rel="noopener">Ver en YouTube</a>:
+ <p>${x.desc}</p>;
+ return <div class="card"><button class="fav" onclick="toggleFav(this,'${x.name}')">♡</button><div class="emoji">${x.emoji||'💄'}</div><h3>${x.name}</h3>${extra}</div>;
+}
+function render(){
+ productGrid.innerHTML=products.map(x=>cardHTML(x,'product')).join('');
+ homeCards.innerHTML=products.slice(0,3).map(x=>cardHTML(x,'product')).join('');
+ skinGrid.innerHTML=skincare.map(x=>cardHTML(x,'skin')).join('');
+ brushGrid.innerHTML=brushes.map(x=>cardHTML(x,'brush')).join('');
+ brandGrid.innerHTML=brands.map(x=>cardHTML(x,'brand')).join('');
+ tutorialGrid.innerHTML=tutorials.map(x=>cardHTML(x,'tutorial')).join('');
+ compareA.innerHTML=products.map((x,i)=><option value="${i}">${x.name}</option>).join('');
+ compareB.innerHTML=products.map((x,i)=><option value="${i}">${x.name}</option>).join('');
+ compareB.selectedIndex=1;
+ compareA.onchange=compare; compareB.onchange=compare; compare();
+}
+function toggleFav(btn,name){
+ btn.textContent=btn.textContent==='♡'?'♥️':'♡';
+ alert(btn.textContent==='♥️'?name+' fue añadido a favoritos.':name+' fue eliminado de favoritos.');
+}
+function searchSite(){
+ const q=document.getElementById('homeSearch').value.trim().toLowerCase();
+ if(!q){show('productos');return}
+ const found=[...products,...skincare,...brushes,...brands,...tutorials].filter(x=>(x.name+' '+(x.desc||'')+' '+(x.brand||'')+' '+(x.type||'')).toLowerCase().includes(q));
+ results.innerHTML=found.length?found.map(x=>cardHTML(x,'skin')).join(''):<div class="notice">No encontramos resultados para "${q}". Prueba con otra palabra.</div>;
+ show('resultados');
+}
+function runQuiz(){
+ const q1=document.querySelector('input[name=q1]:checked')?.value;
+ const q2=document.querySelector('input[name=q2]:checked')?.value;
+ const q3=document.querySelector('input[name=q3]:checked')?.value;
+ if(!q1||!q2||!q3){quizResult.innerHTML='<div class="notice">Completa las tres preguntas para recibir recomendaciones.</div>';return}
+ let text=q2==='natural'?'Te recomendamos empezar con base ligera, corrector, rubor, máscara y labial natural.':'Puedes explorar sombras, máscara, rubor, iluminador y labiales para un look de noche.';
+ if(q3==='rutina') text+=' Para preparar la piel, revisa nuestra sección de skincare.';
+ else text+=' También puedes usar el comparador para conocer diferencias entre productos.';
+ quizResult.innerHTML='<div class="notice"><b>Tu recomendación:</b><br>'+text+'<br><br><button class=\"primary\" id=\"quizProductsBtn\">Explorar productos</button></div>';
+ document.getElementById('quizProductsBtn').addEventListener('click',()=>show('productos'));
+}
+function compare(){
+ const a=products[+compareA.value],b=products[+compareB.value];
+ compareResult.innerHTML=[a,b].map(x=><div class="card"><div class="emoji">${x.emoji}</div><h3>${x.name}</h3><p><b>Marca:</b> ${x.brand}<br><b>Cobertura:</b> ${x.coverage}<br><b>Acabado:</b> ${x.finish}<br><b>Calificación:</b> ${x.rating}</p></div>).join('');
+}
+render();
+
+document.querySelectorAll('nav button').forEach(btn=>{
+  btn.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+});
+</script>
+</body>
+</html>
