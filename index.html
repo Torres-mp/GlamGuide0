@@ -172,54 +172,174 @@ const tutorials=[
 {name:"Cómo usar brochas",emoji:"🖌️",desc:"Identifica las brochas más comunes y sus usos.",url:"https://www.youtube.com/results?search_query=brochas+maquillaje+para+que+sirven"}
 ];
 
-function show(id){
- document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
- document.getElementById(id).classList.add('active'); window.scrollTo({top:0,behavior:'smooth'});
+function show(id) {
+  const section = document.getElementById(id);
+  if (!section) return;
+
+  document.querySelectorAll('.section').forEach(s => {
+    s.classList.remove('active');
+  });
+
+  section.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
-function cardHTML(x,kind){
- let extra=kind==='product'?<span class="badge">${x.type}</span><p>Marca: ${x.brand}<br>Calificación: ${x.rating}</p><button class="primary" onclick="alert('${x.name}: ${x.desc}')">Ver información</button>:
- kind==='tutorial'?<p>${x.desc}</p><a class="btn primary" href="${x.url}" target="_blank" rel="noopener">Ver en YouTube</a>:
- <p>${x.desc}</p>;
- return <div class="card"><button class="fav" onclick="toggleFav(this,'${x.name}')">♡</button><div class="emoji">${x.emoji||'💄'}</div><h3>${x.name}</h3>${extra}</div>;
+
+function cardHTML(x, kind) {
+  let extra = '';
+
+  if (kind === 'product') {
+    extra = `
+      <span class="badge">${x.type}</span>
+      <p>Marca: ${x.brand}<br>
+      Calificación: ${x.rating}</p>
+      <button class="primary"
+        onclick="alert('${x.name}: ${x.desc}')">
+        Ver información
+      </button>`;
+  } else if (kind === 'tutorial') {
+    extra = `
+      <p>${x.desc}</p>
+      <a class="btn primary" href="${x.url}"
+        target="_blank" rel="noopener">
+        Ver en YouTube
+      </a>`;
+  } else {
+    extra = <p>${x.desc}</p>;
+  }
+
+  return `
+    <div class="card">
+      <button class="fav"
+        onclick="toggleFav(this,'${x.name}')">♡</button>
+      <div class="emoji">${x.emoji || '💄'}</div>
+      <h3>${x.name}</h3>
+      ${extra}
+    </div>`;
 }
-function render(){
- productGrid.innerHTML=products.map(x=>cardHTML(x,'product')).join('');
- homeCards.innerHTML=products.slice(0,3).map(x=>cardHTML(x,'product')).join('');
- skinGrid.innerHTML=skincare.map(x=>cardHTML(x,'skin')).join('');
- brushGrid.innerHTML=brushes.map(x=>cardHTML(x,'brush')).join('');
- brandGrid.innerHTML=brands.map(x=>cardHTML(x,'brand')).join('');
- tutorialGrid.innerHTML=tutorials.map(x=>cardHTML(x,'tutorial')).join('');
- compareA.innerHTML=products.map((x,i)=><option value="${i}">${x.name}</option>).join('');
- compareB.innerHTML=products.map((x,i)=><option value="${i}">${x.name}</option>).join('');
- compareB.selectedIndex=1;
- compareA.onchange=compare; compareB.onchange=compare; compare();
+
+function render() {
+  document.getElementById('productGrid').innerHTML =
+    products.map(x => cardHTML(x, 'product')).join('');
+
+  document.getElementById('homeCards').innerHTML =
+    products.slice(0, 3).map(x => cardHTML(x, 'product')).join('');
+
+  document.getElementById('skinGrid').innerHTML =
+    skincare.map(x => cardHTML(x, 'skin')).join('');
+
+  document.getElementById('brushGrid').innerHTML =
+    brushes.map(x => cardHTML(x, 'brush')).join('');
+
+  document.getElementById('brandGrid').innerHTML =
+    brands.map(x => cardHTML(x, 'brand')).join('');
+
+  document.getElementById('tutorialGrid').innerHTML =
+    tutorials.map(x => cardHTML(x, 'tutorial')).join('');
+
+  const compareA = document.getElementById('compareA');
+  const compareB = document.getElementById('compareB');
+
+  compareA.innerHTML = products.map((x, i) =>
+    <option value="${i}">${x.name}</option>
+  ).join('');
+
+  compareB.innerHTML = compareA.innerHTML;
+  compareB.selectedIndex = 1;
+
+  compareA.onchange = compare;
+  compareB.onchange = compare;
+
+  compare();
 }
-function toggleFav(btn,name){
- btn.textContent=btn.textContent==='♡'?'♥️':'♡';
- alert(btn.textContent==='♥️'?name+' fue añadido a favoritos.':name+' fue eliminado de favoritos.');
+
+function toggleFav(btn, name) {
+  btn.textContent = btn.textContent === '♡' ? '♥️' : '♡';
+
+  alert(
+    btn.textContent === '♥️'
+      ? name + ' fue añadido a favoritos.'
+      : name + ' fue eliminado de favoritos.'
+  );
 }
-function searchSite(){
- const q=document.getElementById('homeSearch').value.trim().toLowerCase();
- if(!q){show('productos');return}
- const found=[...products,...skincare,...brushes,...brands,...tutorials].filter(x=>(x.name+' '+(x.desc||'')+' '+(x.brand||'')+' '+(x.type||'')).toLowerCase().includes(q));
- results.innerHTML=found.length?found.map(x=>cardHTML(x,'skin')).join(''):<div class="notice">No encontramos resultados para "${q}". Prueba con otra palabra.</div>;
- show('resultados');
+
+function searchSite() {
+  const q = document.getElementById('homeSearch')
+    .value.trim().toLowerCase();
+
+  if (!q) {
+    show('productos');
+    return;
+  }
+
+  const found = [...products, ...skincare, ...brushes, ...brands, ...tutorials]
+    .filter(x =>
+      (x.name + ' ' + (x.desc || '') + ' ' +
+       (x.brand || '') + ' ' + (x.type || ''))
+      .toLowerCase().includes(q)
+    );
+
+  document.getElementById('results').innerHTML = found.length
+    ? found.map(x => cardHTML(x, 'skin')).join('')
+    : <div class="notice">No encontramos resultados. Prueba con otra palabra.</div>;
+
+  show('resultados');
 }
-function runQuiz(){
- const q1=document.querySelector('input[name=q1]:checked')?.value;
- const q2=document.querySelector('input[name=q2]:checked')?.value;
- const q3=document.querySelector('input[name=q3]:checked')?.value;
- if(!q1||!q2||!q3){quizResult.innerHTML='<div class="notice">Completa las tres preguntas para recibir recomendaciones.</div>';return}
- let text=q2==='natural'?'Te recomendamos empezar con base ligera, corrector, rubor, máscara y labial natural.':'Puedes explorar sombras, máscara, rubor, iluminador y labiales para un look de noche.';
- if(q3==='rutina') text+=' Para preparar la piel, revisa nuestra sección de skincare.';
- else text+=' También puedes usar el comparador para conocer diferencias entre productos.';
- quizResult.innerHTML='<div class="notice"><b>Tu recomendación:</b><br>'+text+'<br><br><button class=\"primary\" id=\"quizProductsBtn\">Explorar productos</button></div>';
- document.getElementById('quizProductsBtn').addEventListener('click',()=>show('productos'));
+
+function runQuiz() {
+  const q1 = document.querySelector('input[name="q1"]:checked')?.value;
+  const q2 = document.querySelector('input[name="q2"]:checked')?.value;
+  const q3 = document.querySelector('input[name="q3"]:checked')?.value;
+
+  const result = document.getElementById('quizResult');
+
+  if (!q1 || !q2 || !q3) {
+    result.innerHTML =
+      '<div class="notice">Completa las tres preguntas para recibir recomendaciones.</div>';
+    return;
+  }
+
+  let recommendation = q2 === 'natural'
+    ? 'Te recomendamos empezar con base ligera, corrector, rubor, máscara y labial natural.'
+    : 'Puedes explorar sombras, máscara, rubor, iluminador y labiales para un look de noche.';
+
+  if (q3 === 'rutina') {
+    recommendation += ' Para preparar la piel, revisa nuestra sección de skincare.';
+  } else {
+    recommendation += ' También puedes usar el comparador para conocer diferencias entre productos.';
+  }
+
+  result.innerHTML = `
+    <div class="notice">
+      <b>Tu recomendación:</b><br>
+      ${recommendation}<br><br>
+      <button class="primary" id="quizProductsBtn">
+        Explorar productos
+      </button>
+    </div>`;
+
+  document.getElementById('quizProductsBtn')
+    .addEventListener('click', () => show('productos'));
 }
-function compare(){
- const a=products[+compareA.value],b=products[+compareB.value];
- compareResult.innerHTML=[a,b].map(x=><div class="card"><div class="emoji">${x.emoji}</div><h3>${x.name}</h3><p><b>Marca:</b> ${x.brand}<br><b>Cobertura:</b> ${x.coverage}<br><b>Acabado:</b> ${x.finish}<br><b>Calificación:</b> ${x.rating}</p></div>).join('');
+
+function compare() {
+  const a = products[+document.getElementById('compareA').value];
+  const b = products[+document.getElementById('compareB').value];
+
+  document.getElementById('compareResult').innerHTML = [a, b]
+    .map(x => `
+      <div class="card">
+        <div class="emoji">${x.emoji}</div>
+        <h3>${x.name}</h3>
+        <p>
+          <b>Marca:</b> ${x.brand}<br>
+          <b>Cobertura:</b> ${x.coverage}<br>
+          <b>Acabado:</b> ${x.finish}<br>
+          <b>Calificación:</b> ${x.rating}
+        </p>
+      </div>`
+    ).join('');
 }
+
 render();
 
 document.querySelectorAll('nav button').forEach(btn=>{
